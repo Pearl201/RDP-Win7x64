@@ -1,29 +1,49 @@
-apt-get update
-echo "Download windows files"
+#!/bin/bash
+
+# Create a Linux user
+echo "Creating a new user..."
+read -p "Enter the username: " USERNAME
+adduser $USERNAME
+usermod -aG sudo $USERNAME
+
+# Update package list
+sudo apt-get update
+
+# Install IceWM and X server
+echo "Installing IceWM and X server..."
+sudo apt-get install icewm xorg
+
+# Download and install Google Chrome
+echo "Downloading and installing Google Chrome..."
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo dpkg -i google-chrome-stable_current_amd64.deb
+sudo apt-get install -f  # Install dependencies if needed
+
+# Download and install Chrome Remote Desktop
+echo "Downloading and installing Chrome Remote Desktop..."
+wget https://dl.google.com/linux/direct/chrome-remote-desktop_current_amd64.deb
+sudo dpkg -i chrome-remote-desktop_current_amd64.deb
+sudo apt-get install -f  # Install dependencies if needed
+
+# Start Chrome Remote Desktop
+echo "Starting Chrome Remote Desktop..."
+DISPLAY= /opt/google/chrome-remote-desktop/start-host --code="YOUR_AUTH_CODE_HERE" --redirect-url="https://remotedesktop.google.com/_/oauthredirect" --name=$(hostname)
+
+# Download Windows image
+echo "Downloading Windows image..."
 wget -O w7x64.img https://bit.ly/akuhnetw7X64
-echo "Download ngrok"
-wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip > /dev/null 2>&1
-unzip ngrok-stable-linux-amd64.zip > /dev/null 2>&1
-read -p "Ctrl + V Authtoken: " CRP 
-./ngrok authtoken $CRP 
-nohup ./ngrok tcp 3388 &>/dev/null &
-echo Downloading File From akuh.net
-apt-get install qemu-system-x86 -y
-echo "Wait"
-echo "Starting Windows"
+
+# Install QEMU
+echo "Installing QEMU..."
+sudo apt-get install qemu-system-x86 -y
+
+# Start Windows in QEMU
+echo "Starting Windows..."
 qemu-system-x86_64 -hda w7x64.img -m 4G -smp cores=4 -net user,hostfwd=tcp::3388-:3389 -net nic -object rng-random,id=rng0,filename=/dev/urandom -device virtio-rng-pci,rng=rng0 -vga vmware -nographic &>/dev/null &
 clear
-echo RDP Address:
-curl --silent --show-error http://127.0.0.1:4040/api/tunnels | sed -nE 's/.*public_url":"tcp:..([^"]*).*/\1/p'
-echo "===================================="
-echo "Username: akuh"
-echo "Password: Akuh.Net"
-echo "===================================="
-echo "===================================="
-echo "Keep supporting akuh.net, thank you"
-echo "You Got Free RDP now"
-echo "Wait 2 minute to finish bot"
-echo "You can close this tab"
-echo "RDP runs for 50 hours"
-echo "===================================="
+
+# Script will sleep for 432,000 seconds (5 days)
+echo "The script will sleep for 5 days (432,000 seconds)."
 sleep 432000
+
+echo "Script completed."
