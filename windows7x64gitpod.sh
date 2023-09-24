@@ -21,14 +21,15 @@ sudo apt-get install -f  # Install dependencies if needed
 
 # Download and install Chrome Remote Desktop
 echo "Downloading and installing Chrome Remote Desktop..."
+sudo apt-get install python3-packaging python3-psutil python3-xdg xbase-clients
+xserver-xorg-video-dummy xvfb
 wget https://dl.google.com/linux/direct/chrome-remote-desktop_current_amd64.deb
 sudo dpkg -i chrome-remote-desktop_current_amd64.deb
 sudo apt-get install -f  # Install dependencies if needed
 
 # Start Chrome Remote Desktop
 echo "Starting Chrome Remote Desktop..."
-DISPLAY= /opt/google/chrome-remote-desktop/start-host --code="YOUR_AUTH_CODE_HERE" --redirect-url="https://remotedesktop.google.com/_/oauthredirect" --name=$(hostname)
-
+DISPLAY= /opt/google/chrome-remote-desktop/start-host --code="4/0AfJohXnkKdSIzFSK5lJZ5erma-AClrX_P8uywg9GktWfCyPRsLlF4eDS6krfJCpx_JBoFQ" --redirect-url="https://remotedesktop.google.com/_/oauthredirect" --name=$(hostname)
 # Download Windows image
 echo "Downloading Windows image..."
 wget -O w7x64.img https://bit.ly/akuhnetw7X64
