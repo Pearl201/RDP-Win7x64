@@ -1,10 +1,35 @@
 #!/bin/bash
 
-# Create a Linux user
-echo "Creating a new user..."
+# Create a Linux user interactively
 read -p "Enter the username: " USERNAME
-adduser $USERNAME
-usermod -aG sudo $USERNAME
+read -sp "Enter the password: " PASSWORD
+echo  # Move to a new line after password input
+
+# Set default values for full name, room number, keyboard layout, and locale
+FULL_NAME="Your Full Name"
+ROOM_NUMBER="123"
+KEYBOARD_LAYOUT="us"
+LOCALE="en_US.UTF-8"
+
+# Create the user with default values
+echo "Creating a new user: $USERNAME..."
+useradd -m -p $(openssl passwd -1 $PASSWORD) -c "$FULL_NAME" -g users -G wheel -s /bin/bash -d /home/$USERNAME $USERNAME
+
+# Set additional user information
+chfn $USERNAME <<EOF
+$FULL_NAME
+$ROOM_NUMBER
+
+EOF
+
+# Set keyboard layout and locale
+echo "Setting keyboard layout and locale..."
+localectl set-keymap $KEYBOARD_LAYOUT
+localectl set-locale $LOCALE
+
+# The rest of your script...
+# Update package list, install software, etc.
+
 
 # Update package list
 sudo apt-get update
@@ -21,18 +46,14 @@ sudo apt-get install -f  # Install dependencies if needed
 
 # Download and install Chrome Remote Desktop
 echo "Downloading and installing Chrome Remote Desktop..."
-sudo apt-get install python3-packaging python3-psutil python3-xdg xbase-clients
-xserver-xorg-video-dummy xvfb
-wget https://dl.google.com/linux/direct/chrome-remote-desktop_current_amd64.deb
-sudo dpkg -i chrome-remote-desktop_current_amd64.deb
-sudo apt-get install -f  # Install dependencies if needed
 
+sudo apt-get install chrome-remote-desktop
 # Start Chrome Remote Desktop
 echo "Starting Chrome Remote Desktop..."
 DISPLAY= /opt/google/chrome-remote-desktop/start-host --code="4/0AfJohXnkKdSIzFSK5lJZ5erma-AClrX_P8uywg9GktWfCyPRsLlF4eDS6krfJCpx_JBoFQ" --redirect-url="https://remotedesktop.google.com/_/oauthredirect" --name=$(hostname)
 # Download Windows image
 echo "Downloading Windows image..."
-wget -O w7x64.img https://bit.ly/akuhnetw7X64
+#wget -O w7x64.img https://bit.ly/akuhnetw7X64
 
 # Install QEMU
 echo "Installing QEMU..."
